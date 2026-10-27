@@ -36,8 +36,8 @@ jobs:
           output: trivy-report.json
           exit-code: "0"
 
-      - name: Telecharger le template HTML officiel
-        run: curl -sL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+      - name: Télécharger le modèle HTML
+        run: curl -sL -o html.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
 
       - name: Rapport Trivy (HTML)
         uses: aquasecurity/trivy-action@master
@@ -54,7 +54,7 @@ jobs:
           echo "### Rapport Trivy" >> "$GITHUB_STEP_SUMMARY"
           for s in CRITICAL HIGH MEDIUM; do
             n=$(jq "[.Results[]?.Vulnerabilities[]? | select(.Severity==\"$s\")] | length" trivy-report.json)
-            echo "$s: $n" >> "$GITHUB_STEP_SUMMARY"
+            echo "- $s : $n" >> "$GITHUB_STEP_SUMMARY"
           done
 
       - name: Publier les rapports
@@ -69,7 +69,7 @@ jobs:
         with:
           image-ref: ${{ env.IMAGE }}:ci
           format: table
-          severity: HIGH, CRITICAL
+          severity: HIGH,CRITICAL
           vuln-type: library
           ignore-unfixed: true
           exit-code: "1"
